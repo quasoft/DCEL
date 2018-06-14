@@ -62,6 +62,11 @@ func (he *HalfEdge) String() string {
 	return fmt.Sprintf("{Edge %p; Target: %d,%d; Twin: %p; Face: %s}", he, he.Target.X, he.Target.Y, he.Twin, faceID)
 }
 
+// IsClosed returns true if both half-edges in the pair have a target vertex.
+func (he *HalfEdge) IsClosed() bool {
+	return he.Target != nil && he.Twin != nil && he.Twin.Target != nil
+}
+
 // NewDCEL creates a new DCEL data structure.
 func NewDCEL() *DCEL {
 	return &DCEL{}
