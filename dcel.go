@@ -2,7 +2,10 @@
 // planar graphs in a plane. This implementation is intended to be used in 2D space only.
 package dcel
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 // DCEL stores the state of the data structure and provides methods for linking of three sets of
 // objects: vertecies, edges and faces.
@@ -51,7 +54,12 @@ func (f *Face) String() string {
 }
 
 func (he *HalfEdge) String() string {
-	return fmt.Sprintf("{Edge %p; Target: %d,%d; Twin: %p}", he, he.Target.X, he.Target.Y, he.Twin)
+	faceID := "nil"
+	if he.Face != nil {
+		faceID = "#" + strconv.FormatInt(he.Face.ID, 10)
+	}
+
+	return fmt.Sprintf("{Edge %p; Target: %d,%d; Twin: %p; Face: %s}", he, he.Target.X, he.Target.Y, he.Twin, faceID)
 }
 
 // NewDCEL creates a new DCEL data structure.
