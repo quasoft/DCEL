@@ -89,14 +89,33 @@ func (d *DCEL) NewVertex(x, y int) *Vertex {
 	return vertex
 }
 
-// NewHalfEdge creates a new edge starting at the given vertex and stores it in the structure.
-func (d *DCEL) NewHalfEdge(vertex *Vertex) *HalfEdge {
+// NewHalfEdge creates a new half-edge starting at the given vertex and stores it in the structure.
+func (d *DCEL) NewHalfEdge(face *Face, vertex *Vertex) *HalfEdge {
 	halfEdge := &HalfEdge{
+		Face:   face,
 		Target: vertex,
+	}
+	if face.HalfEdge == nil {
+		face.HalfEdge = halfEdge
 	}
 	if vertex.HalfEdge == nil {
 		vertex.HalfEdge = halfEdge
 	}
 	d.HalfEdges = append(d.HalfEdges, halfEdge)
 	return halfEdge
+}
+
+// NewEdge creates a pair of half-edges, one of them starting at the given vertex.
+func (d *DCEL) NewEdge(face1, face2 *Face, vertex *Vertex) (*HalfEdge, *HalfEdge) {
+	halfEdge := d.NewHalfEdge(face1, vertex)
+	twin := &HalfEdge{
+		Face: face2,
+		Twin: halfEdge,
+	}
+	halfEdge.Twin = twin
+	if face2.HalfEdge == nil {
+		face2.HalfEdge = twin
+	}
+	d.HalfEdges = append(d.HalfEdges, twin)
+	return halfEdge, twin
 }
