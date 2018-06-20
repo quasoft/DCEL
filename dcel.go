@@ -96,9 +96,16 @@ func (d *DCEL) NewHalfEdge(face *Face, vertex *Vertex, twin *HalfEdge) *HalfEdge
 		Target: vertex,
 		Twin:   twin,
 	}
-	if face.HalfEdge == nil {
-		face.HalfEdge = halfEdge
+
+	// Link new half-edge to the one pointed by the face counter-clockwise
+	if face.HalfEdge != nil {
+		face.HalfEdge.Prev = halfEdge
+		halfEdge.Next = face.HalfEdge
 	}
+	// Set the new half-edge as the one pointed by the face
+	face.HalfEdge = halfEdge
+
+	// If the vertex is not yet linked with an edge, link to this one
 	if vertex != nil && vertex.HalfEdge == nil {
 		vertex.HalfEdge = halfEdge
 	}
