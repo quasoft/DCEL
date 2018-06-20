@@ -90,15 +90,16 @@ func (d *DCEL) NewVertex(x, y int) *Vertex {
 }
 
 // NewHalfEdge creates a new half-edge starting at the given vertex and stores it in the structure.
-func (d *DCEL) NewHalfEdge(face *Face, vertex *Vertex) *HalfEdge {
+func (d *DCEL) NewHalfEdge(face *Face, vertex *Vertex, twin *HalfEdge) *HalfEdge {
 	halfEdge := &HalfEdge{
 		Face:   face,
 		Target: vertex,
+		Twin:   twin,
 	}
 	if face.HalfEdge == nil {
 		face.HalfEdge = halfEdge
 	}
-	if vertex.HalfEdge == nil {
+	if vertex != nil && vertex.HalfEdge == nil {
 		vertex.HalfEdge = halfEdge
 	}
 	d.HalfEdges = append(d.HalfEdges, halfEdge)
@@ -107,15 +108,8 @@ func (d *DCEL) NewHalfEdge(face *Face, vertex *Vertex) *HalfEdge {
 
 // NewEdge creates a pair of half-edges, one of them starting at the given vertex.
 func (d *DCEL) NewEdge(face1, face2 *Face, vertex *Vertex) (*HalfEdge, *HalfEdge) {
-	halfEdge := d.NewHalfEdge(face1, vertex)
-	twin := &HalfEdge{
-		Face: face2,
-		Twin: halfEdge,
-	}
+	halfEdge := d.NewHalfEdge(face1, vertex, nil)
+	twin := d.NewHalfEdge(face2, nil, halfEdge)
 	halfEdge.Twin = twin
-	if face2.HalfEdge == nil {
-		face2.HalfEdge = twin
-	}
-	d.HalfEdges = append(d.HalfEdges, twin)
 	return halfEdge, twin
 }
